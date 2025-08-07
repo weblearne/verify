@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Self Service Management System</title>
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --secondary-color: #667eea;
+            --text-dark: #2d3748;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
+            --background-light: #f8fafc;
+            --background-white: #ffffff;
+            --error-color: #e53e3e;
+            --success-color: #38a169;
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.15);
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 16px;
+            --border-radius-xl: 20px;
+            --border-radius-2xl: 24px;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--background-light);
+            padding: clamp(10px, 2vw, 20px);
+            font-size: clamp(14px, 1.5vw, 15px);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 100%;
+            width: clamp(300px, 90vw, 1200px);
+            margin: 0 auto;
+            background: var(--background-white);
+            border-radius: var(--border-radius-2xl);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .header {
+            font-size: clamp(1.4rem, 2vw, 1.6rem);
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--primary-color);
+            text-align: center;
+            padding: clamp(20px, 3vw, 32px) clamp(20px, 3vw, 32px) 20px;
+        }
+
+        .header h1 {
+            font-size: clamp(20px, 2.5vw, 26px);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: clamp(13px, 1.5vw, 15px);
+            opacity: 0.9;
+        }
+
+        .tab-navigation {
+            display: flex;
+            background: var(--background-light);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: clamp(12px, 1.5vw, 16px) clamp(16px, 2vw, 24px);
+            background: none;
+            border: none;
+            font-size: clamp(14px, 1.5vw, 16px);
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tab-btn:hover {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .tab-btn.active {
+            color: var(--primary-color);
+            background: var(--background-white);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-container {
+            padding: clamp(20px, 3vw, 32px);
+            padding-top: 12px;
+        }
+
+        .service-selector {
+            margin-bottom: clamp(20px, 3vw, 32px);
+        }
+
+        .service-selector label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: clamp(14px, 1.5vw, 16px);
+        }
+
+        select {
+            width: 100%;
+            padding: clamp(12px, 1.5vw, 16px) clamp(16px, 2vw, 20px);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            font-size: clamp(14px, 1.5vw, 16px);
+            background: var(--background-white);
+            color: var(--text-dark);
+            transition: var(--transition);
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: clamp(14px, 1.5vw, 16px);
+            font-family: var(--font-family);
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        select:hover {
+            border-color: #cbd5e0;
+            transform: translateY(-1px);
+        }
+
+        .service-card {
+            margin-top: clamp(16px, 2vw, 24px);
+            display: none;
+            transform: translateY(30px);
+            transition: var(--transition);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-xl);
+            overflow: hidden;
+            background: var(--background-white);
+            box-shadow: var(--shadow-md);
+        }
+
+        .service-card.active {
+            display: block;
+            animation: slideInUp 0.5s ease-out forwards;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .service-description {
+            background: var(--primary-color);
+            color: var(--background-white);
+            padding: clamp(16px, 2vw, 20px);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .service-info {
+            flex: 1;
+        }
+
+        .service-description h3 {
+            font-size: clamp(16px, 1.8vw, 18px);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .service-description p {
+            font-size: clamp(12px, 1.4vw, 14px);
+            opacity: 0.9;
+        }
+
+        .price-tag {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--border-radius-md);
+            padding: clamp(6px, 1vw, 8px) clamp(10px, 1.5vw, 12px);
+            text-align: center;
+            min-width: 80px;
+            margin-left: clamp(12px, 1.5vw, 16px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .price-tag .currency {
+            font-size: clamp(10px, 1.2vw, 12px);
+            opacity: 0.8;
+            display: block;
+        }
+
+        .price-tag .amount {
+            font-size: clamp(14px, 1.5vw, 16px);
+            font-weight: 700;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .input-content {
+            padding: clamp(16px, 2vw, 24px);
+        }
+
+        .input-group {
+            margin-bottom: clamp(16px, 2vw, 24px);
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: clamp(13px, 1.5vw, 15px);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: clamp(12px, 1.5vw, 16px) clamp(16px, 2vw, 20px);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            font-size: clamp(14px, 1.5vw, 16px);
+            transition: var(--transition);
+            background: var(--background-white);
+            color: var(--text-dark);
+            font-family: var(--font-family);
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .input-group input:hover {
+            border-color: #cbd5e0;
+        }
+
+        .input-group .input-info {
+            font-size: clamp(11px, 1.3vw, 13px);
+            color: var(--text-light);
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group .error {
+            color: var(--error-color);
+            font-size: clamp(11px, 1.3vw, 13px);
+            margin-top: 6px;
+            display: none;
+            align-items: center;
+        }
+
+        .input-group .success-check {
+            color: var(--success-color);
+            font-size: clamp(11px, 1.3vw, 13px);
+            margin-top: 6px;
+            display: none;
+            align-items: center;
+        }
+
+        .input-group input.invalid {
+            border-color: var(--error-color);
+            background-color: #fef5e7;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .input-group input.valid {
+            border-color: var(--success-color);
+            background-color: #f0fff4;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: clamp(14px, 1.8vw, 18px);
+            background: var(--primary-color);
+            color: var(--background-white);
+            border: none;
+            border-radius: var(--border-radius-lg);
+            font-size: clamp(14px, 1.5vw, 16px);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            opacity: 0.5;
+            pointer-events: none;
+            transform: translateY(10px);
+            font-family: var(--font-family);
+        }
+
+        .submit-btn:enabled {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .submit-btn:hover:enabled {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .submit-btn:active:enabled {
+            transform: translateY(-1px);
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: clamp(16px, 2vw, 20px);
+            border-radius: var(--border-radius-lg);
+            margin-top: clamp(16px, 2vw, 24px);
+            border: 2px solid #b8e6c1;
+            display: none;
+            animation: slideIn 0.5s ease-out;
+            font-family: var(--font-family);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: clamp(16px, 2vw, 20px);
+            height: clamp(16px, 2vw, 20px);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: var(--background-white);
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .history-container {
+            padding: clamp(20px, 3vw, 32px);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: clamp(16px, 2vw, 24px);
+        }
+
+        .history-header h2 {
+            font-size: clamp(20px, 2.5vw, 24px);
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .clear-history-btn {
+            padding: clamp(6px, 1vw, 8px) clamp(12px, 1.5vw, 16px);
+            background: var(--error-color);
+            color: var(--background-white);
+            border: none;
+            border-radius: var(--border-radius-sm);
+            font-size: clamp(12px, 1.4vw, 14px);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .clear-history-btn:hover {
+            background: #c53030;
+            transform: translateY(-1px);
+        }
+
+        .search-filter {
+            margin-bottom: clamp(16px, 2vw, 20px);
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: clamp(180px, 30vw, 200px);
+            padding: clamp(10px, 1.5vw, 12px) clamp(12px, 1.5vw, 16px);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            font-size: clamp(12px, 1.4vw, 14px);
+        }
+
+        .filter-select {
+            padding: clamp(10px, 1.5vw, 12px) clamp(12px, 1.5vw, 16px);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            font-size: clamp(12px, 1.4vw, 14px);
+            min-width: clamp(130px, 20vw, 150px);
+        }
+
+        .history-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(clamp(180px, 25vw, 200px), 1fr));
+            gap: clamp(12px, 1.5vw, 16px);
+            margin-bottom: clamp(16px, 2vw, 24px);
+        }
+
+        .stat-card {
+            background: var(--background-white);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: clamp(16px, 2vw, 20px);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: clamp(24px, 3vw, 28px);
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: clamp(12px, 1.4vw, 14px);
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .history-table {
+            background: var(--background-white);
+            border-radius: var(--border-radius-lg);
+            border: 2px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: clamp(12px, 1.4vw, 14px);
+            min-width: clamp(600px, 80vw, 800px);
+        }
+
+        .table-header {
+            background: var(--primary-color);
+            color: var(--background-white);
+        }
+
+        .table-header th {
+            padding: clamp(12px, 1.5vw, 16px) clamp(10px, 1.2vw, 12px);
+            font-weight: 600;
+            text-align: left;
+            font-size: clamp(12px, 1.4vw, 14px);
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .table-body tr {
+            border-bottom: 1px solid #f1f5f9;
+            transition: background var(--transition);
+        }
+
+        .table-body tr:hover {
+            background: var(--background-light);
+        }
+
+        .table-body tr:last-child {
+            border-bottom: none;
+        }
+
+        .table-body td {
+            padding: clamp(12px, 1.5vw, 16px) clamp(10px, 1.2vw, 12px);
+            vertical-align: middle;
+        }
+
+        .trx-id {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: clamp(11px, 1.3vw, 13px);
+            font-family: 'Courier New', monospace;
+        }
+
+        .service-type-cell {
+            color: var(--secondary-color);
+            font-weight: 500;
+            font-size: clamp(11px, 1.3vw, 13px);
+        }
+
+        .data-input {
+            font-family: 'Courier New', monospace;
+            color: #4a5568;
+            font-size: clamp(10px, 1.2vw, 12px);
+            max-width: clamp(100px, 15vw, 120px);
+            word-break: break-all;
+            background: var(--background-light);
+            padding: 4px 8px;
+            border-radius: var(--border-radius-sm);
+        }
+
+        .amount-cell {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: clamp(11px, 1.3vw, 13px);
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: clamp(10px, 1.1vw, 11px);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-processing {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .status-failed {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .reply-btn {
+            padding: clamp(6px, 1vw, 8px) clamp(12px, 1.5vw, 16px);
+            background: var(--success-color);
+            color: var(--background-white);
+            border: none;
+            border-radius: var(--border-radius-sm);
+            font-size: clamp(10px, 1.2vw, 12px);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .reply-btn:hover {
+            background: #2f855a;
+            transform: translateY(-1px);
+        }
+
+        .reply-btn:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .empty-history {
+            text-align: center;
+            padding: clamp(40px, 5vw, 60px) 20px;
+            color: var(--text-light);
+        }
+
+        .empty-history h3 {
+            font-size: clamp(16px, 1.8vw, 18px);
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        .empty-history p {
+            font-size: clamp(12px, 1.4vw, 14px);
+            opacity: 0.8;
+        }
+
+        @media (max-width: 1024px) {
+            .history-stats {
+                grid-template-columns: repeat(auto-fit, minmax(clamp(160px, 20vw, 180px), 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: clamp(8px, 2vw, 10px);
+                border-radius: var(--border-radius-xl);
+            }
+
+            .header h1 {
+                font-size: clamp(18px, 2.5vw, 22px);
+            }
+
+            .form-container, .history-container {
+                padding: clamp(16px, 2.5vw, 24px);
+                padding-top: 12px;
+            }
+
+            .input-content {
+                padding: clamp(12px, 2vw, 20px);
+            }
+
+            .service-description {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .price-tag {
+                margin-left: 0;
+                margin-top: 12px;
+                align-self: flex-end;
+            }
+
+            .tab-btn {
+                padding: clamp(10px, 1.5vw, 12px) clamp(12px, 1.5vw, 16px);
+                font-size: clamp(12px, 1.4vw, 14px);
+            }
+
+            .search-filter {
+                flex-direction: column;
+            }
+
+            .search-input, .filter-select {
+                width: 100%;
+            }
+
+            .history-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .table-header th,
+            .table-body td {
+                padding: clamp(10px, 1.2vw, 12px) clamp(6px, 1vw, 8px);
+            }
+
+            .data-input {
+                max-width: clamp(80px, 12vw, 100px);
+                font-size: clamp(10px, 1.1vw, 11px);
+            }
+
+            table {
+                min-width: clamp(500px, 75vw, 700px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: clamp(5px, 1.5vw, 8px);
+                border-radius: var(--border-radius-lg);
+            }
+
+            .header h1 {
+                font-size: clamp(16px, 2vw, 18px);
+            }
+
+            .tab-btn {
+                font-size: clamp(11px, 1.3vw, 12px);
+            }
+
+            .history-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Self Service Management Hub</h1>
+            <p>Secure, Fast, Reliable</p>
+        </div>
+
+        <div class="tab-navigation">
+            <button class="tab-btn active" onclick="switchTab('service')">Services</button>
+            <button class="tab-btn" onclick="switchTab('history')">History</button>
+        </div>
+
+        <!-- Service Tab -->
+        <div id="service-tab" class="tab-content active">
+            <div class="form-container">
+                <form id="ipeForm">
+                    <div class="service-selector">
+                        <label for="serviceType">Choose Your Service:</label>
+                        <select id="serviceType" name="serviceType" required>
+                            <option value="">Select a service type...</option>
+                            <option value="clearance">IPE Clearance - ₦2,000</option>
+                            <option value="delinking">Account Delinking - ₦2,000</option>
+                            <option value="retrieval">Record Retrieval/Delinking - ₦2,500</option>
+                        </select>
+                    </div>
+
+                    <!-- Clearance Section -->
+                    <div id="clearance-section" class="service-card">
+                        <div class="service-description">
+                            <div class="service-info">
+                                <h3>IPE Clearance Service</h3>
+                                <p>Instantly clear your Individual Person Entity record with your unique tracking identifier.</p>
+                            </div>
+                            <div class="price-tag">
+                                <span class="currency">NGN</span>
+                                <span class="amount">2,000</span>
+                            </div>
+                        </div>
+                        <div class="input-content">
+                            <div class="input-group">
+                                <label for="trackingId">15-Character Tracking ID:</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="trackingId" name="trackingId" maxlength="15" placeholder="ABC123DEF456GHI" style="text-transform: uppercase;">
+                                </div>
+                                <div class="input-info">
+                                    <span class="icon">i</span>
+                                    Enter exactly 15 alphanumeric characters (letters and numbers)
+                                </div>
+                                <div class="error">
+                                    <span class="icon">X </span>
+                                    Tracking ID must be exactly 15 alphanumeric characters
+                                </div>
+                                <div class="success-check">
+                                    <span class="icon">✓</span>
+                                    Valid tracking ID format
+                                </div>
+                            </div>
+                            <button type="submit" class="submit-btn clearance-btn" disabled>
+                                Process Clearance
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Delinking Section -->
+                    <div id="delinking-section" class="service-card">
+                        <div class="service-description">
+                            <div class="service-info">
+                                <h3>Account Delinking Service</h3>
+                                <p>Safely delink your login details using your National Identification Number.</p>
+                            </div>
+                            <div class="price-tag">
+                                <span class="currency">NGN</span>
+                                <span class="amount">2,000</span>
+                            </div>
+                        </div>
+                        <div class="input-content">
+                            <div class="input-group">
+                                <label for="ninDelinking">11-Digit NIN:</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="ninDelinking" name="ninDelinking" maxlength="11" placeholder="00000000000">
+                                </div>
+                                <div class="input-info">
+                                    <span class="icon">i</span>
+                                    Enter your 11-digit National Identification Number
+                                </div>
+                                <div class="error">
+                                    <span class="icon">X</span>
+                                    NIN must be exactly 11 digits
+                                </div>
+                                <div class="success-check">
+                                    <span class="icon">✓</span>
+                                    Valid NIN format
+                                </div>
+                            </div>
+                            <button type="submit" class="submit-btn delinking-btn" disabled>
+                                Process Delinking
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Retrieval Section -->
+                    <div id="retrieval-section" class="service-card">
+                        <div class="service-description">
+                            <div class="service-info">
+                                <h3>Record Retrieval Service</h3>
+                                <p>Access and retrieve/reset your self service login details.</p>
+                            </div>
+                            <div class="price-tag">
+                                <span class="currency">NGN</span>
+                                <span class="amount">2,500</span>
+                            </div>
+                        </div>
+                        <div class="input-content">
+                            <div class="input-group">
+                                <label for="ninRetrieval">11-Digit NIN:</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="ninRetrieval" name="ninRetrieval" maxlength="11" placeholder="00000000000">
+                                </div>
+                                <div class="input-info">
+                                    <span class="icon">i</span>
+                                    Enter your 11-digit National Identification Number
+                                </div>
+                                <div class="error">
+                                    <span class="icon">X</span>
+                                    NIN must be exactly 11 digits
+                                </div>
+                                <div class="success-check">
+                                    <span class="icon">✓</span>
+                                    Valid NIN format
+                                </div>
+                            </div>
+                            <button type="submit" class="submit-btn retrieval-btn" disabled>
+                                Retrieve Records
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="successMessage" class="success-message">
+                        <strong>Success!</strong> Your request has been processed successfully. You will receive a confirmation notification shortly.
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- History Tab -->
+        <div id="history-tab" class="tab-content">
+            <div class="history-container">
+                <div class="history-header">
+                    <h2>Transaction History</h2>
+                    <button class="clear-history-btn" onclick="clearHistory()">Clear History</button>
+                </div>
+                <div class="history-table" id="historyTable">
+                    <div class="table-wrapper">
+                        <table>
+                            <thead class="table-header">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Service Type</th>
+                                    <th>Data Input</th>
+                                    <th>Amount (₦)</th>
+                                    <th>Status</th>
+                                    <th>Reply</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-body" id="historyTableBody">
+                                <!-- Transaction rows will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="empty-history" id="emptyHistory" style="display: none;">
+                    <h3>No Transaction History</h3>
+                    <p>Your completed transactions will appear here</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let transactionHistory = [];
+        let transactionCounter = 1000;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            setupEventListeners();
+            loadTransactionHistory();
+        }
+
+        function setupEventListeners() {
+            // Service selector change event
+            document.getElementById('serviceType').addEventListener('change', handleServiceChange);
+
+            // Input validation events
+            document.getElementById('trackingId').addEventListener('input', validateTrackingId);
+            document.getElementById('ninDelinking').addEventListener('input', validateNIN);
+            document.getElementById('ninRetrieval').addEventListener('input', validateNIN);
+
+            // Form submit event
+            document.getElementById('ipeForm').addEventListener('submit', handleFormSubmit);
+        }
+
+        function switchTab(tabName) {
+            // Remove active class from all tabs and content
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Add active class to selected tab and content
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+
+            // Load history if switching to history tab
+            if (tabName === 'history') {
+                loadTransactionHistory();
+            }
+        }
+
+        function handleServiceChange() {
+            const serviceType = this.value;
+            const sections = ['clearance-section', 'delinking-section', 'retrieval-section'];
+
+            // Hide all sections
+            sections.forEach(sectionId => {
+                const section = document.getElementById(sectionId);
+                section.classList.remove('active');
+            });
+
+            // Show selected section with animation
+            if (serviceType) {
+                setTimeout(() => {
+                    document.getElementById(serviceType + '-section').classList.add('active');
+                }, 100);
+            }
+
+            // Reset form validation
+            resetFormValidation();
+        }
+
+        function validateTrackingId() {
+            const trackingId = this.value.toUpperCase();
+            this.value = trackingId;
+
+            const isValid = /^[A-Z0-9]{15}$/.test(trackingId);
+            updateFieldValidation(this, isValid);
+            updateSubmitButton('clearance');
+        }
+
+        function validateNIN() {
+            const nin = this.value.replace(/\D/g, ''); // Remove non-digits
+            this.value = nin;
+
+            const isValid = /^\d{11}$/.test(nin);
+            updateFieldValidation(this, isValid);
+
+            // Determine which button to update based on the field
+            const serviceType = this.id.includes('Delinking') ? 'delinking' : 'retrieval';
+            updateSubmitButton(serviceType);
+        }
+
+        function updateFieldValidation(field, isValid) {
+            const inputGroup = field.closest('.input-group');
+            const errorDiv = inputGroup.querySelector('.error');
+            const successDiv = inputGroup.querySelector('.success-check');
+
+            if (field.value.length === 0) {
+                // Empty field
+                field.classList.remove('valid', 'invalid');
+                errorDiv.style.display = 'none';
+                successDiv.style.display = 'none';
+            } else if (isValid) {
+                // Valid field
+                field.classList.remove('invalid');
+                field.classList.add('valid');
+                errorDiv.style.display = 'none';
+                successDiv.style.display = 'flex';
+            } else {
+                // Invalid field
+                field.classList.remove('valid');
+                field.classList.add('invalid');
+                errorDiv.style.display = 'flex';
+                successDiv.style.display = 'none';
+            }
+        }
+
+        function updateSubmitButton(serviceType) {
+            const button = document.querySelector('.' + serviceType + '-btn');
+            let isValid = false;
+
+            if (serviceType === 'clearance') {
+                const trackingId = document.getElementById('trackingId').value;
+                isValid = /^[A-Z0-9]{15}$/.test(trackingId);
+            } else if (serviceType === 'delinking') {
+                const nin = document.getElementById('ninDelinking').value;
+                isValid = /^\d{11}$/.test(nin);
+            } else if (serviceType === 'retrieval') {
+                const nin = document.getElementById('ninRetrieval').value;
+                isValid = /^\d{11}$/.test(nin);
+            }
+
+            button.disabled = !isValid;
+        }
+
+        function resetFormValidation() {
+            // Reset all input fields
+            document.querySelectorAll('.input-group input').forEach(input => {
+                input.classList.remove('valid', 'invalid');
+                input.value = '';
+            });
+
+            // Hide all validation messages
+            document.querySelectorAll('.error, .success-check').forEach(msg => {
+                msg.style.display = 'none';
+            });
+
+            // Disable all submit buttons
+            document.querySelectorAll('.submit-btn').forEach(btn => {
+                btn.disabled = true;
+            });
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const serviceType = document.getElementById('serviceType').value;
+            const button = document.querySelector('.' + serviceType + '-btn');
+
+            // Show loading state
+            const originalText = button.innerHTML;
+            button.innerHTML = '<span class="loading"></span>Processing...';
+            button.disabled = true;
+
+            // Simulate processing time
+            setTimeout(() => {
+                processTransaction(serviceType);
+
+                // Reset button
+                button.innerHTML = originalText;
+                button.disabled = false;
+
+                // Show success message
+                const successMessage = document.getElementById('successMessage');
+                successMessage.style.display = 'block';
+
+                // Hide success message after 5 seconds
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 5000);
+
+                // Reset form
+                resetForm();
+            }, 2000);
+        }
+
+        function processTransaction(serviceType) {
+            let dataInput, amount;
+
+            switch(serviceType) {
+                case 'clearance':
+                    dataInput = document.getElementById('trackingId').value;
+                    amount = 2000;
+                    break;
+                case 'delinking':
+                    dataInput = document.getElementById('ninDelinking').value;
+                    amount = 2000;
+                    break;
+                case 'retrieval':
+                    dataInput = document.getElementById('ninRetrieval').value;
+                    amount = 2500;
+                    break;
+            }
+
+            const transaction = {
+                id: generateTransactionId(),
+                serviceType: getServiceDisplayName(serviceType),
+                dataInput: dataInput,
+                amount: amount,
+                status: Math.random() > 0.1 ? 'success' : (Math.random() > 0.5 ? 'processing' : 'failed'),
+                timestamp: new Date().toISOString(),
+                reply: Math.random() > 0.3 ? 'Available' : 'Pending'
+            };
+
+            transactionHistory.unshift(transaction);
+        }
+
+        function generateTransactionId() {
+            transactionCounter++;
+            return 'TXN' + transactionCounter.toString().padStart(6, '0');
+        }
+
+        function getServiceDisplayName(serviceType) {
+            const names = {
+                'clearance': 'IPE Clearance',
+                'delinking': 'Account Delinking',
+                'retrieval': 'Record Retrieval'
+            };
+            return names[serviceType] || serviceType;
+        }
+
+        function resetForm() {
+            document.getElementById('ipeForm').reset();
+            handleServiceChange.call(document.getElementById('serviceType'));
+        }
+
+        function loadTransactionHistory() {
+            const tableBody = document.getElementById('historyTableBody');
+            const emptyHistory = document.getElementById('emptyHistory');
+            const historyTable = document.getElementById('historyTable');
+
+            if (transactionHistory.length === 0) {
+                historyTable.style.display = 'none';
+                emptyHistory.style.display = 'block';
+                return;
+            }
+
+            historyTable.style.display = 'block';
+            emptyHistory.style.display = 'none';
+            tableBody.innerHTML = '';
+
+            transactionHistory.forEach(transaction => {
+                const row = createTransactionRow(transaction);
+                tableBody.appendChild(row);
+            });
+        }
+
+        function createTransactionRow(transaction) {
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td><span class="trx-id">${transaction.id}</span></td>
+                <td><span class="service-type-cell">${transaction.serviceType}</span></td>
+                <td><span class="data-input">${maskSensitiveData(transaction.dataInput)}</span></td>
+                <td><span class="amount-cell">₦${transaction.amount.toLocaleString()}</span></td>
+                <td><span class="status-badge status-${transaction.status}">${transaction.status.toUpperCase()}</span></td>
+                <td><button class="reply-btn" ${transaction.reply === 'Pending' ? 'disabled' : ''} onclick="showReply('${transaction.id}')">${transaction.reply}</button></td>
+            `;
+
+            return row;
+        }
+
+        function maskSensitiveData(data) {
+            if (data.length <= 6) return data;
+            const start = data.substring(0, 3);
+            const end = data.substring(data.length - 3);
+            const middle = '*'.repeat(data.length - 6);
+            return start + middle + end;
+        }
+
+        function clearHistory() {
+            if (confirm('Are you sure you want to clear all transaction history? This action cannot be undone.')) {
+                transactionHistory = [];
+                loadTransactionHistory();
+            }
+        }
+
+        function showReply(transactionId) {
+            const transaction = transactionHistory.find(t => t.id === transactionId);
+            if (transaction && transaction.reply === 'Available') {
+                alert(`Transaction Reply for ${transactionId}:\n\nYour ${transaction.serviceType} request has been processed successfully. All systems have been updated accordingly.\n\nThank you for using IPE Management Hub!`);
+            }
+        }
+    </script>
+</body>
+</html>
