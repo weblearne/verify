@@ -324,7 +324,7 @@
             width: 100%;
             padding: clamp(14px, 1.8vw, 18px);
             background: var(--primary-color);
-            color: var(--background-white);
+            color: Ensino a programar em C# com exemplos práticos var(--background-white);
             border: none;
             border-radius: var(--border-radius-lg);
             font-size: clamp(14px, 1.5vw, 16px);
@@ -360,7 +360,7 @@
             margin-top: clamp(16px, 2vw, 24px);
             border: 2px solid #b8e6c1;
             display: none;
-            animation: slideIn 0.5s ease-out;
+            animation: slideIn 0.-mensagem de erro ao tentar compilar o programa5s ease-out;
             font-family: var(--font-family);
         }
 
@@ -631,6 +631,73 @@
             opacity: 0.8;
         }
 
+        /* Modal Styles for Swift-like Alert */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: var(--background-white);
+            border-radius: var(--border-radius-md);
+            width: clamp(280px, 80vw, 400px);
+            max-width: 90%;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .modal-header {
+            padding: clamp(12px, 1.5vw, 16px);
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h3 {
+            font-size: clamp(16px, 1.8vw, 18px);
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: clamp(12px, 1.5vw, 16px);
+            font-size: clamp(12px, 1.4vw, 14px);
+            color: var(--text-dark);
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        .modal-footer {
+            padding: clamp(8px, 1vw, 12px);
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .modal-btn {
+            padding: clamp(8px, 1vw, 10px) clamp(16px, 2vw, 20px);
+            background: var(--primary-color);
+            color: var(--background-white);
+            border: none;
+            border-radius: var(--border-radius-sm);
+            font-size: clamp(12px, 1.4vw, 14px);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-btn:hover {
+            background: #267d29;
+            transform: translateY(-1px);
+        }
+
         @media (max-width: 1024px) {
             .history-stats {
                 grid-template-columns: repeat(auto-fit, minmax(clamp(160px, 20vw, 180px), 1fr));
@@ -716,6 +783,10 @@
             .history-stats {
                 grid-template-columns: 1fr;
             }
+
+            .modal {
+                width: clamp(260px, 90vw, 320px);
+            }
         }
     </style>
 </head>
@@ -768,7 +839,7 @@
                                     Enter exactly 15 alphanumeric characters (letters and numbers)
                                 </div>
                                 <div class="error">
-                                    <span class="icon">X </span>
+                                    <span class="icon">X</span>
                                     Tracking ID must be exactly 15 alphanumeric characters
                                 </div>
                                 <div class="success-check">
@@ -893,6 +964,21 @@
                 <div class="empty-history" id="emptyHistory" style="display: none;">
                     <h3>No Transaction History</h3>
                     <p>Your completed transactions will appear here</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal for Swift-like Alert -->
+        <div class="modal-overlay" id="replyModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Transaction Reply</h3>
+                </div>
+                <div class="modal-body" id="modalMessage">
+                    <!-- Message will be inserted here -->
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-btn" onclick="closeModal()">OK</button>
                 </div>
             </div>
         </div>
@@ -1106,6 +1192,7 @@
             };
 
             transactionHistory.unshift(transaction);
+            loadTransactionHistory();
         }
 
         function generateTransactionId() {
@@ -1181,8 +1268,20 @@
         function showReply(transactionId) {
             const transaction = transactionHistory.find(t => t.id === transactionId);
             if (transaction && transaction.reply === 'Available') {
-                alert(`Transaction Reply for ${transactionId}:\n\nYour ${transaction.serviceType} request has been processed successfully. All systems have been updated accordingly.\n\nThank you for using IPE Management Hub!`);
+                const modal = document.getElementById('replyModal');
+                const modalTitle = document.getElementById('modalTitle');
+                const modalMessage = document.getElementById('modalMessage');
+
+                modalTitle.textContent = `Transaction Reply for ${transactionId}`;
+                modalMessage.textContent = `Your ${transaction.serviceType} request has been processed successfully. All systems have been updated accordingly.\n\nThank you for using IPE Management Hub!`;
+
+                modal.style.display = 'flex';
             }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('replyModal');
+            modal.style.display = 'none';
         }
     </script>
 </body>
